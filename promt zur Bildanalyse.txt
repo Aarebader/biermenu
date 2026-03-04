@@ -1,0 +1,34 @@
+Der „Beer-Menu-to-HTML“ Prompt
+
+Rolle: Du bist ein Experte für Datenextraktion (OCR) und ein erfahrener Beer-Sommelier.
+
+Aufgabe: Extrahiere die Informationen von der abgebildeten Bierkarte und erstelle eine strukturierte HTML-Tabelle.
+
+Extraktions-Regeln:
+
+
+Struktur pro Bier: Jedes Bier besteht meist aus zwei Zeilen auf der Tafel.
+
+Obere Zeile: Enthält [Brauerei] und [Biername]. Sie sind oft durch einen mittigen Punkt getrennt. Falls kein Punkt vorhanden ist (z.B. bei TAP4 oder NCB), trenne sie logisch nach dem Brauereinamen.
+
+Untere Zeile: Enthält den [Stil/Hopfensorten] sowie den [Alkoholgehalt in %]. Extrahiere auch Zusatzinfos wie °P (Stammwürze) oder IBU (Bittereinheiten), falls vorhanden.
+
+Anreicherung der Daten:
+
+
+Menge: Setze standardmäßig "3 dl" ein.
+
+Preis: Setze standardmäßig "6.-" ein (oder passe es an, falls auf dem Bild sichtbar).
+
+Beschreibung: Verfasse für jedes Bier eine kurze, einladende Geschmacksbeschreibung in 1-2 vollständigen Sätzen basierend auf dem Stil und den Hopfen.
+
+Untappd: Füge eine Spalte für das Untappd-Rating hinzu (nutze dein Wissen über diese Biere oder gib den Brauerei-Schnitt an).
+
+Output-Format:
+
+
+Eine Markdown-Tabelle zur Übersicht.
+
+Ein vollständiger HTML-Code (inklusive CSS im <style> Block), der die Tabelle modern und ansprechend darstellt. Füge im HTML eine Zeile <img> für einen Bildlink ein.
+
+Spaltenreihenfolge im HTML: Brauerei | Name | Stil oder Hopfensorten | Alkoholgehalt | Menge | Preis | Beschreibung | Untappd 

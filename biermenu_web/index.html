@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aktuelle Bierkarte</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; background-color: #121212; color: white; margin: 0;
+        }
+        .loader {
+            border: 4px solid #333; border-top: 4px solid #f5a623;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 0 auto 20px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+        <div class="loader"></div>
+        <p>Zapfe aktuelle Bierkarte...</p>
+    </div>
+
+    <!-- Firebase SDKs als Module importieren -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        // Deine echte Firebase Config aus der firebase.txt
+        const firebaseConfig = {
+            apiKey: "AIzaSyCWosGZCwOHL-PpTzlpfdq6rmAzTILZU2I",
+            authDomain: "biermenu.firebaseapp.com",
+            projectId: "biermenu",
+            storageBucket: "biermenu.firebasestorage.app",
+            messagingSenderId: "1013860810543",
+            appId: "1:1013860810543:web:a142b8116bf54aaa35abda",
+            measurementId: "G-9J2X5X6C59"
+        };
+
+        // Firebase initialisieren
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        async function loadLatestMenu() {
+            try {
+                // Suche in der Collection "menus", sortiere nach Zeitstempel absteigend, hole nur 1 Ergebnis
+                const q = query(collection(db, "menus"), orderBy("timestamp", "desc"), limit(1));
+                const querySnapshot = await getDocs(q);
+                
+                if (!querySnapshot.empty) {
+                    const latestDoc = querySnapshot.docs[0];
+                    const htmlContent = latestDoc.data().html_content;
+                    
+                    // Magie: Überschreibe diese Ladeseite komplett mit dem generierten Code der KI!
+                    document.open();
+                    document.write(htmlContent);
+                    document.close();
+                } else {
+                    document.body.innerHTML = "<h2>Noch keine Bierkarte hochgeladen.</h2>";
+                }
+            } catch (error) {
+                console.error("Fehler beim Laden:", error);
+                document.body.innerHTML = "<h2>Hoppla! Fehler beim Laden der Bierkarte.</h2><p>" + error.message + "</p>";
+            }
+        }
+
+        // Skript starten
+        loadLatestMenu();
+    </script>
+</body>
+</html>
