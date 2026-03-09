@@ -1,0 +1,130 @@
+ Plan: Biermenu auf Google Maps publizieren
+
+ Context
+
+ Das Biermenu soll direkt aus der App auf Google Maps veröffentlicht werden können — als Bild (Foto) und als strukturierte Speisekarte — für die Standorte "Brauereifenster" und "Holliger" in Köniz.
+ Der User steuert über den EditMenuScreen, wann und was publiziert wird, mit einer Option für automatisches Publizieren.
+
+ Voraussetzung: Google Business Profile API Zugang
+
+ Vor der Implementierung müssen folgende Schritte manuell durchgeführt werden:
+ 1. Google Cloud Console: Projekt erstellen oder bestehendes biermenu-Projekt verwenden
+ 2. API aktivieren: Google My Business API + Business Information API aktivieren
+ 3. API-Zugang beantragen: https://developers.google.com/my-business/content/basic-setup ausfüllen (Google prüft den Antrag)
+ 4. OAuth 2.0 Client ID erstellen (Android-Typ mit SHA-1 Fingerprint)
+ 5. Manager-Rechte für die Google Maps Einträge "Brauereifenster" und "Holliger" sicherstellen
+ 6. Account/Location IDs über die API ermitteln und konfigurieren
+
+ ---
+ Neue Dateien
+
+ 1. network/GoogleAuthManager.kt
+
+ - Singleton object für OAuth2 mit Scope business.manage
+ - Nutzt Google Identity Services (play-services-auth)
+ - Token-Speicherung in EncryptedSharedPreferences
+ - Methoden: getValidAccessToken(), isAuthenticated(), signOut()
+ - Auto-Refresh über Refresh-Token
+
+ 2. network/GoogleBusinessClient.kt
+
+ - Retrofit-basierter HTTP-Client für die GBP API v4
+ - Endpoints: startUpload, PUT binary, createMedia, PATCH foodMenus
+ - OkHttp Interceptor für Bearer-Token
+ - uploadMenuImage(token, locationId, imageBytes) → 3-Step Upload
+ - updateFoodMenu(token, locationId, entries) → BeerEntry → FoodMenu JSON Mapping
+
+ 3. network/MenuImageRenderer.kt
+
+ - Konvertiert HTML-Menu zu Bitmap via Offscreen-WebView
+ - renderToBitmap(context, html, widthPx=1080) auf Main-Thread
+ - bitmapToJpegBytes(bitmap, quality=90) für Upload
+
+ 4. network/PublishSettings.kt
+
+ - PublishConfig data class: autoPublish, publishImage, publishFoodMenu, selectedLocations
+ - SharedPreferences-Persistenz (Pattern wie BeerMenuStore)
+
+ 5. network/LocationConfig.kt
+
+ - Hardcoded Konfiguration für die zwei Standorte
+ - BusinessLocation(id, displayName, accountId, locationId)
+ - IDs werden nach API-Zugang ermittelt und in local.properties gespeichert
+
+ 6. network/GbpPublisher.kt
+
+ - Orchestriert den gesamten Publish-Workflow
+ - publish(context, entries, html, config) → Token holen → Bild rendern → API-Calls
+ - Gibt PublishResult mit Ergebnis pro Standort zurück
+
+ ---
+ Änderungen an bestehenden Dateien
+
+ MainScreen.kt — EditMenuScreen erweitern
+
+ - Neuer Button "Google Maps" in der Toolbar (neben bestehendem Upload-Button)
+ - Publish-Dialog (AlertDialog) mit:
+   - Standort-Auswahl: Checkboxen für "Brauereifenster" / "Holliger" / "Beide"
+   - Publish-Typ: Checkboxen für "Bild" / "Speisekarte" / "Beide"
+   - Toggle: "Menu immer beim Hochladen publizieren"
+   - Toggle: "Bild immer beim Hochladen publizieren"
+   - Button: "Jetzt publizieren"
+ - Auto-Publish Hook: Nach erfolgreichem Firebase-Upload prüfen ob autoPublish=true, dann GbpPublisher.publish() aufrufen
+ - Google-Login: Falls nicht authentifiziert, zuerst Login-Flow starten
+
+ build.gradle.kts — Neue Dependencies
+
+ implementation("com.google.android.gms:play-services-auth:21.0.0")
+ implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+ implementation("com.google.code.gson:gson:2.10.1")
+ implementation("com.squareup.okhttp3:okhttp:4.12.0")
+ implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+ build.gradle.kts — BuildConfig
+
+ buildConfigField("String", "GOOGLE_OAUTH_CLIENT_ID", "\"${localProperties["GOOGLE_OAUTH_CLIENT_ID"] ?: ""}\"")
+
+ ---
+ Datenfluss
+
+ EditMenuScreen
+   ├─ "Upload" (bestehend) → Firebase
+   │   └─ if autoPublish → GbpPublisher.publish()
+   └─ "Google Maps" (neu) → Publish-Dialog
+       └─ "Jetzt publizieren"
+           ├─ GoogleAuthManager.getValidAccessToken()
+           ├─ if publishImage:
+           │   ├─ HtmlGenerator.generate(entries) [bestehend]
+           │   ├─ MenuImageRenderer.renderToBitmap(html)
+           │   └─ GoogleBusinessClient.uploadMenuImage(token, locationId, bytes)
+           └─ if publishFoodMenu:
+               └─ GoogleBusinessClient.updateFoodMenu(token, locationId, entries)
+                   └─ BeerEntry → FoodMenuItem Mapping:
+                       name: "${brewery} - ${name}"
+                       price: parse("6.-") → CHF 6.00
+                       description: "${type} | ${alcohol}\n${description}"
+
+ ---
+ Implementierungsreihenfolge
+
+ 1. Dependencies + BuildConfig hinzufügen
+ 2. LocationConfig.kt + PublishSettings.kt (einfache Datenstrukturen)
+ 3. GoogleAuthManager.kt (OAuth2-Flow)
+ 4. GoogleBusinessClient.kt (API-Calls)
+ 5. MenuImageRenderer.kt (HTML → Bitmap)
+ 6. GbpPublisher.kt (Orchestrierung)
+ 7. MainScreen.kt — UI-Integration (Dialog + Auto-Publish)
+
+ ---
+ Verifizierung
+
+ 1. Build: App kompiliert ohne Fehler
+ 2. Auth-Flow: Google-Login öffnet sich, Token wird gespeichert
+ 3. Bild-Rendering: HTML-Menu wird korrekt als Bitmap gerendert (lokal speichern und prüfen)
+ 4. API-Test: Mit validateOnly Parameter testen (wo unterstützt)
+ 5. End-to-End: Menu scannen → bearbeiten → "Google Maps" → Bild + Speisekarte auf Google Maps sichtbar
+
+ Risiken
+
+ - API-Zugang: Google muss den Antrag genehmigen (kann Tage dauern). Wir bauen den Code so, dass er bereit ist sobald der Zugang da ist.
+ - Kein Sandbox: Tests nur mit echten Business-Profilen möglich. Während der Entwicklung nutzen wir den "Testing"-Modus mit explizit hinzugefügten Testnutzern.

@@ -16,8 +16,8 @@ Regeln:
 - Untere Zeile: [Stil/Hopfensorten] und [Alkoholgehalt in %].
 - Zusatzinfos: °P oder IBU extrahieren.
 - Menge: Standard 3 dl. Preis: Standard 6.- (falls nicht anders sichtbar).
-- Beschreibung: 1-2 einladende Sätze auf Deutsch basierend auf Stil/Hopfen erfinden.
-- Untappd: Rating von https://untappd.com hinzufügen, wenn kein rating gefunden wird, default 7
+- Beschreibung: 1 einladenden Satz auf Deutsch basierend auf Stil/Hopfen schreiben.
+- Untappd: Rating von untappd.com hinzufügen, suche für jedes Bier nach einem Rating. wenn kein rating gefunden wird, default 7
 - nameColor: Hex-Farbe des Biernamens wie er auf der Karte erscheint (z.B. "#FFFFFF"), falls nicht erkennbar "#d0d0d0"
 Output: Liefere AUSSCHLIESSLICH ein JSON-Array (keine Markdown-Blöcke, kein weiterer Text).
 Felder pro Eintrag: name, brewery, type, alcohol, amount, price, description, untappd, nameColor"""

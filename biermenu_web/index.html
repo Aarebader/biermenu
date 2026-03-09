@@ -3,25 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aktuelle Bierkarte</title>
+    <title>Bierkarte – Brauereifenster</title>
     <link rel="icon" type="image/jpeg" href="favicon.jpeg">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            font-family: sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; background-color: #121212; color: white; margin: 0;
+            font-family: 'Barlow Condensed', 'Segoe UI', sans-serif;
+            background-color: #0d1b2a;
+            color: #e8e8e8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
+
+        .loading {
+            text-align: center;
+        }
+
         .loader {
-            border: 4px solid #333; border-top: 4px solid #f5a623;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite; margin: 0 auto 20px;
+            width: 56px;
+            height: 56px;
+            margin: 0 auto 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            animation: pulse 1.5s ease-in-out infinite;
+            box-shadow: 0 4px 20px rgba(245,166,35,0.3);
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .loader img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.08); opacity: 0.7; }
+        }
+
+        .loading p {
+            font-weight: 600;
+            font-size: 0.9em;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #5a8a9a;
+        }
+
+        /* Navigation button for two-page mode */
+        .nav-btn {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            padding: 12px 28px;
+            border: none;
+            border-radius: 8px;
+            background: #f5a623;
+            color: #0d1b2a;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(245,166,35,0.4);
+            transition: background 0.15s ease;
+        }
+        .nav-btn:active {
+            background: #e0951e;
+        }
+
+        #image-page {
+            display: none;
+            min-height: 100vh;
+            padding: 12px;
+            padding-bottom: 70px;
+            background-color: #0d1b2a;
+            justify-content: center;
+            align-items: center;
+        }
+        #image-page img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+        }
+        #menu-page {
+            padding-bottom: 70px;
+        }
     </style>
 </head>
 <body>
-    <div style="text-align: center;">
-        <div class="loader"></div>
+    <div class="loading">
+        <div class="loader">
+            <img src="holliger_logo.jpeg" alt="Holliger Bru">
+        </div>
         <p>Zapfe aktuelle Bierkarte...</p>
     </div>
 
@@ -53,27 +134,7 @@
                     const imageBase64 = data.image_base64 || null;
 
                     if (imageBase64) {
-                        // Zwei-Seiten-Version: Menu-HTML erweitern mit Navigation und Bildseite
                         const imgDataUrl = 'data:image/jpeg;base64,' + imageBase64;
-                        const navCss = `
-                            .nav-btn {
-                                position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-                                z-index: 9999; padding: 12px 28px; border: none; border-radius: 24px;
-                                background: #f5a623; color: #1a1a1a; font-size: 16px; font-weight: 600;
-                                cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-                                font-family: sans-serif;
-                            }
-                            .nav-btn:active { background: #e0951e; }
-                            #image-page {
-                                display: none; min-height: 100vh; padding: 12px; padding-bottom: 70px;
-                                background-color: #1a1a1a; justify-content: center; align-items: center;
-                            }
-                            #image-page img {
-                                max-width: 100%; height: auto; border-radius: 8px;
-                                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-                            }
-                            #menu-page { padding-bottom: 70px; }
-                        `;
                         const navScript = `
                             <script>
                             function togglePage() {
@@ -83,25 +144,47 @@
                                 if (image.style.display === 'none' || image.style.display === '') {
                                     menu.style.display = 'none';
                                     image.style.display = 'flex';
-                                    btn.textContent = 'Bierkarte anzeigen';
+                                    btn.textContent = 'BIERKARTE ANZEIGEN';
                                 } else {
                                     image.style.display = 'none';
                                     menu.style.display = 'block';
-                                    btn.textContent = 'Originalbild anzeigen';
+                                    btn.textContent = 'ORIGINALBILD ANZEIGEN';
                                 }
                                 window.scrollTo(0, 0);
                             }
                             <\/script>
                         `;
 
-                        // Menu-HTML aufteilen und Navigation einfügen
+                        // Inject navigation styles matching the Holliger theme
+                        const navCss = `
+                            .nav-btn {
+                                position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+                                z-index: 9999; padding: 12px 28px; border: none; border-radius: 8px;
+                                background: #f5a623; color: #0d1b2a;
+                                font-family: 'Barlow Condensed', sans-serif;
+                                font-size: 0.85em; font-weight: 700;
+                                letter-spacing: 0.1em; text-transform: uppercase;
+                                cursor: pointer; box-shadow: 0 4px 16px rgba(245,166,35,0.4);
+                            }
+                            .nav-btn:active { background: #e0951e; }
+                            #image-page {
+                                display: none; min-height: 100vh; padding: 12px; padding-bottom: 70px;
+                                background-color: #0d1b2a; justify-content: center; align-items: center;
+                            }
+                            #image-page img {
+                                max-width: 100%; height: auto; border-radius: 10px;
+                                box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+                            }
+                            #menu-page { padding-bottom: 70px; }
+                        `;
+
                         const modifiedHtml = htmlContent
                             .replace('</head>', '<style>' + navCss + '</style></head>')
                             .replace('<body>', '<body>' + navScript + '<div id="menu-page">')
                             .replace('</body>',
                                 '</div>' +
                                 '<div id="image-page"><img src="' + imgDataUrl + '" alt="Originalbild der Bierkarte"></div>' +
-                                '<button class="nav-btn" id="nav-btn" onclick="togglePage()">Originalbild anzeigen</button>' +
+                                '<button class="nav-btn" id="nav-btn" onclick="togglePage()">ORIGINALBILD ANZEIGEN</button>' +
                                 '</body>'
                             );
 
@@ -109,17 +192,32 @@
                         document.write(modifiedHtml);
                         document.close();
                     } else {
-                        // Ohne Bild: wie bisher einfach Menu anzeigen
                         document.open();
                         document.write(htmlContent);
                         document.close();
                     }
                 } else {
-                    document.body.innerHTML = "<h2>Noch keine Bierkarte hochgeladen.</h2>";
+                    document.body.innerHTML = `
+                        <div class="loading">
+                            <div class="loader" style="animation: none;">
+                                <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <rect x="20" y="4" width="8" height="20" rx="1" fill="#0d1b2a"/>
+                                    <circle cx="24" cy="26" r="5" stroke="#0d1b2a" stroke-width="2.5" fill="none"/>
+                                    <rect x="22" y="31" width="4" height="10" rx="1" fill="#0d1b2a"/>
+                                    <rect x="26" y="34" width="4" height="2" rx="0.5" fill="#0d1b2a"/>
+                                    <rect x="26" y="38" width="3" height="2" rx="0.5" fill="#0d1b2a"/>
+                                </svg>
+                            </div>
+                            <p>Noch keine Bierkarte hochgeladen.</p>
+                        </div>`;
                 }
             } catch (error) {
                 console.error("Fehler beim Laden:", error);
-                document.body.innerHTML = "<h2>Hoppla! Fehler beim Laden der Bierkarte.</h2><p>" + error.message + "</p>";
+                document.body.innerHTML = `
+                    <div class="loading">
+                        <p style="color: #f5a623;">Hoppla! Fehler beim Laden.</p>
+                        <p style="font-size: 0.75em; margin-top: 8px; color: #5a8a9a;">${error.message}</p>
+                    </div>`;
             }
         }
 
