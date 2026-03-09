@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aktuelle Bierkarte</title>
+    <link rel="icon" type="image/jpeg" href="favicon.jpeg">
     <style>
         body {
             font-family: sans-serif;
@@ -24,12 +25,10 @@
         <p>Zapfe aktuelle Bierkarte...</p>
     </div>
 
-    <!-- Firebase SDKs als Module importieren -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Deine echte Firebase Config aus der firebase.txt
         const firebaseConfig = {
             apiKey: "AIzaSyCWosGZCwOHL-PpTzlpfdq6rmAzTILZU2I",
             authDomain: "biermenu.firebaseapp.com",
@@ -40,24 +39,81 @@
             measurementId: "G-9J2X5X6C59"
         };
 
-        // Firebase initialisieren
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
         async function loadLatestMenu() {
             try {
-                // Suche in der Collection "menus", sortiere nach Zeitstempel absteigend, hole nur 1 Ergebnis
                 const q = query(collection(db, "menus"), orderBy("timestamp", "desc"), limit(1));
                 const querySnapshot = await getDocs(q);
-                
+
                 if (!querySnapshot.empty) {
-                    const latestDoc = querySnapshot.docs[0];
-                    const htmlContent = latestDoc.data().html_content;
-                    
-                    // Magie: Überschreibe diese Ladeseite komplett mit dem generierten Code der KI!
-                    document.open();
-                    document.write(htmlContent);
-                    document.close();
+                    const data = querySnapshot.docs[0].data();
+                    const htmlContent = data.html_content;
+                    const imageBase64 = data.image_base64 || null;
+
+                    if (imageBase64) {
+                        // Zwei-Seiten-Version: Menu-HTML erweitern mit Navigation und Bildseite
+                        const imgDataUrl = 'data:image/jpeg;base64,' + imageBase64;
+                        const navCss = `
+                            .nav-btn {
+                                position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+                                z-index: 9999; padding: 12px 28px; border: none; border-radius: 24px;
+                                background: #f5a623; color: #1a1a1a; font-size: 16px; font-weight: 600;
+                                cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+                                font-family: sans-serif;
+                            }
+                            .nav-btn:active { background: #e0951e; }
+                            #image-page {
+                                display: none; min-height: 100vh; padding: 12px; padding-bottom: 70px;
+                                background-color: #1a1a1a; justify-content: center; align-items: center;
+                            }
+                            #image-page img {
+                                max-width: 100%; height: auto; border-radius: 8px;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+                            }
+                            #menu-page { padding-bottom: 70px; }
+                        `;
+                        const navScript = `
+                            <script>
+                            function togglePage() {
+                                var menu = document.getElementById('menu-page');
+                                var image = document.getElementById('image-page');
+                                var btn = document.getElementById('nav-btn');
+                                if (image.style.display === 'none' || image.style.display === '') {
+                                    menu.style.display = 'none';
+                                    image.style.display = 'flex';
+                                    btn.textContent = 'Bierkarte anzeigen';
+                                } else {
+                                    image.style.display = 'none';
+                                    menu.style.display = 'block';
+                                    btn.textContent = 'Originalbild anzeigen';
+                                }
+                                window.scrollTo(0, 0);
+                            }
+                            <\/script>
+                        `;
+
+                        // Menu-HTML aufteilen und Navigation einfügen
+                        const modifiedHtml = htmlContent
+                            .replace('</head>', '<style>' + navCss + '</style></head>')
+                            .replace('<body>', '<body>' + navScript + '<div id="menu-page">')
+                            .replace('</body>',
+                                '</div>' +
+                                '<div id="image-page"><img src="' + imgDataUrl + '" alt="Originalbild der Bierkarte"></div>' +
+                                '<button class="nav-btn" id="nav-btn" onclick="togglePage()">Originalbild anzeigen</button>' +
+                                '</body>'
+                            );
+
+                        document.open();
+                        document.write(modifiedHtml);
+                        document.close();
+                    } else {
+                        // Ohne Bild: wie bisher einfach Menu anzeigen
+                        document.open();
+                        document.write(htmlContent);
+                        document.close();
+                    }
                 } else {
                     document.body.innerHTML = "<h2>Noch keine Bierkarte hochgeladen.</h2>";
                 }
@@ -67,7 +123,6 @@
             }
         }
 
-        // Skript starten
         loadLatestMenu();
     </script>
 </body>

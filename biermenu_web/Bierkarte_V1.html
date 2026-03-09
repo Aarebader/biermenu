@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="de"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bierkarte</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            margin: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        table {
+            width: 100%;
+            max-width: 900px;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #2b2b2b;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            border-radius: 8px;
+            overflow: hidden; /* Ensures border-radius applies to children */
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #3a3a3a;
+        }
+        th {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        tbody tr:hover {
+            background-color: #353535;
+            transition: background-color 0.2s ease-in-out;
+        }
+        .beer-main-info {
+            width: 35%;
+        }
+        .beer-details {
+            width: 45%;
+        }
+        .beer-price-untappd {
+            width: 20%;
+            text-align: right;
+            white-space: nowrap; /* Keep price and Untappd on one line if possible */
+        }
+
+        .beer-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #d0d0d0;
+            margin-bottom: 5px;
+        }
+        .beer-style-abv {
+            font-size: 0.9em;
+            color: #b0b0b0;
+        }
+        .beer-extras {
+            font-size: 0.85em;
+            color: #909090;
+            margin-bottom: 8px;
+        }
+        .beer-desc {
+            font-size: 0.9em;
+            line-height: 1.4;
+            color: #c0c0c0;
+        }
+        .beer-price-qty {
+            font-weight: bold;
+            font-size: 1.15em;
+            color: #aaffaa; /* Greenish for price */
+            margin-bottom: 5px;
+        }
+        .beer-untappd-rating {
+            font-size: 0.85em;
+            color: #88bbff; /* Bluish for Untappd */
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Bier</th>
+                <th>Details &amp; Beschreibung</th>
+                <th>Preis &amp; Untappd</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Beer 1 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Holliger · Schlosshätteler 2024</div>
+                    <div class="beer-style-abv">IPA | 4.7% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">Hops: Centennial, Cascade, Chinook, Coyet</div>
+                    <div class="beer-desc">Ein klassisches IPA, das eine lebendige Mischung amerikanischer Hopfen zur Geltung bringt, frisch und aromatisch.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.75</div>
+                </td>
+            </tr>
+            <!-- Beer 2 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Brauerei Ernst · Null Bock</div>
+                    <div class="beer-style-abv">Bock | 7.5% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras"></div>
+                    <div class="beer-desc">Ein robustes und malziges Bockbier, perfekt für kühlere Abende mit seinen reichen Karamellnoten.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.80</div>
+                </td>
+            </tr>
+            <!-- Beer 3 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">TAP4 · Old Verdant IPA</div>
+                    <div class="beer-style-abv">IPA | 5.7% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">15.1°P | 52 IBU</div>
+                    <div class="beer-desc">Ein ausgewogenes IPA mit einer guten Hopfenbitterkeit und einem soliden Malzgerüst.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.65</div>
+                </td>
+            </tr>
+            <!-- Beer 4 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">TAP4 · Triticale Pale Ale</div>
+                    <div class="beer-style-abv">Pale Ale | 3.6% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">14.3°P | 35 IBU | Andaliman Pfeffer</div>
+                    <div class="beer-desc">Ein einzigartiges Pale Ale gebraut mit Triticale und gewürzt mit exotischem Andaliman Pfeffer für eine pikante Note.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.90</div>
+                </td>
+            </tr>
+            <!-- Beer 5 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Holliger &amp; Nine Bros · It Pushes Me Sour Cup</div>
+                    <div class="beer-style-abv">Sour IPA | 5.9% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">Hops: Moutere</div>
+                    <div class="beer-desc">Ein erfrischendes Sour IPA mit lebendigen Moutere-Hopfen, das ein herrlich säuerliches und fruchtiges Erlebnis bietet.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 4.05</div>
+                </td>
+            </tr>
+            <!-- Beer 6 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">NBG · Robust Porter (66%)</div>
+                    <div class="beer-style-abv">Robust Porter | 6.5% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras"></div>
+                    <div class="beer-desc">Ein reichhaltiger und dunkler
+ Robust Porter mit Noten von Schokolade und Kaffee, der einen sanften, 
+befriedigenden Abgang bietet.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.95</div>
+                </td>
+            </tr>
+            <!-- Beer 7 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">TAP4 · Saison</div>
+                    <div class="beer-style-abv">Saison | 5.3% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">13.0°P | 25 IBU</div>
+                    <div class="beer-desc">Ein klassisches, erfrischendes Saison mit fruchtigen und würzigen Noten, perfekt für warmes Wetter.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.70</div>
+                </td>
+            </tr>
+            <!-- Beer 8 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Lorraine Beer Project · Brett's Bounty</div>
+                    <div class="beer-style-abv">Brett Pale Ale | 5.7% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras"></div>
+                    <div class="beer-desc">Ein funky Brett Pale Ale mit einem ausgeprägten Wildhefe-Charakter, komplex und faszinierend im Geschmack.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 4.10</div>
+                </td>
+            </tr>
+            <!-- Beer 9 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">TAP4 · Pollo Verde</div>
+                    <div class="beer-style-abv">Ale | 5.7% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">13.9°P | 26 IBU | Chipotle &amp; Aniber</div>
+                    <div class="beer-desc">Ein abenteuerliches Ale mit Chipotle und Aniber, das einen rauchigen und subtil würzigen Kick liefert.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 4.00</div>
+                </td>
+            </tr>
+            <!-- Beer 10 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Holliger · All in the Green Area</div>
+                    <div class="beer-style-abv">IPA | 5.1% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">Hops: Citra, Galaxy, Nelson Sauvin, Rywakai</div>
+                    <div class="beer-desc">Ein lebendiges IPA, das vor tropischen und zitrusartigen Noten nur so strotzt, dank einer kraftvollen Hopfenmischung.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 3.90</div>
+                </td>
+            </tr>
+            <!-- Beer 11 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Holliger · A Face Like Joys Rainweather</div>
+                    <div class="beer-style-abv">NEIPA | 6.2% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">Hops: Citra, Mosaic, Idaho 7</div>
+                    <div class="beer-desc">Ein trübes und saftiges NEIPA, vollgepackt mit hellen Fruchtaromen und einer sanften Bitterkeit.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 4.15</div>
+                </td>
+            </tr>
+            <!-- Beer 12 -->
+            <tr>
+                <td class="beer-main-info">
+                    <div class="beer-title">Holliger · It Goes Around The Sausage</div>
+                    <div class="beer-style-abv">DIPA | 8.1% Alc. Vol.</div>
+                </td>
+                <td class="beer-details">
+                    <div class="beer-extras">Hops: Simcoe, Nelson Sauvin, Citra, Idaho 7</div>
+                    <div class="beer-desc">Ein kraftvolles DIPA, intensiv gehopft für ein komplexes Aroma und ein kühnes Geschmacksprofil.</div>
+                </td>
+                <td class="beer-price-untappd">
+                    <div class="beer-price-qty">3 dl | 6.-</div>
+                    <div class="beer-untappd-rating">Untappd: 4.25</div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</body></html>

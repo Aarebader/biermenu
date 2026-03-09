@@ -1,29 +1,43 @@
 package com.example.beermenu.network
 
+import android.graphics.Bitmap
+import android.util.Base64
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 
 object UploadClient {
-    // Initialisiere die Firestore Instanz
+    private const val TAG = "UploadClient"
     private val db = FirebaseFirestore.getInstance()
 
-    suspend fun upload(html: String): Result<String> {
+    suspend fun upload(html: String, image: Bitmap? = null): Result<String> {
         return try {
-            // Wir erstellen ein Dokument mit dem generierten HTML-Code und einem Zeitstempel
-            val menuData = hashMapOf(
+            val menuData = hashMapOf<String, Any>(
                 "html_content" to html,
                 "timestamp" to System.currentTimeMillis()
             )
 
-            // "menus" ist der Name der Collection (Tabelle) in der Firestore Datenbank
+            if (image != null) {
+                val base64 = bitmapToBase64(image)
+                Log.d(TAG, "Bild als Base64: ${base64.length / 1024} KB")
+                menuData["image_base64"] = base64
+            }
+
             db.collection("menus")
                 .add(menuData)
-                .await() // Warte, bis der Upload abgeschlossen ist
+                .await()
 
             Result.success("Upload zu Firebase erfolgreich!")
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e(TAG, "Upload fehlgeschlagen", e)
             Result.failure(e)
         }
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val baos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 70, baos)
+        return Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP)
     }
 }
