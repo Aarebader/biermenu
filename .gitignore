@@ -68,3 +68,7 @@ firebase-debug.log
 
 # Heap dumps
 *.hprof
+
+# Local assets
+Bilder/
+Pläne/
